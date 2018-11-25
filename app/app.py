@@ -22,7 +22,11 @@ app = Flask(__name__)
 """
 @app.route('/')
 def im_alive():
-    return jsonify({ "message": "I'm alive!") 
+    return jsonify({ "message": "I'm alive!"}) 
+
+@app.route('/eesSim', methods= ['GET', 'POST'])
+def ees_sim_v1():
+    return jsonify({ "message": "I'm alive in eesSim!"})
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,7 +3,7 @@
 import os
 import json
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 execution_path = os.getcwd()
 models_dir = os.path.join(execution_path, "models")
@@ -32,9 +32,14 @@ mock_content = {'cluster': [{'id': "DW1001",
                 'simulacion': {'volumen_mes':'200'
                               }
                 }
-
-json_response = {}
-json_response['result'] = mock_content
+def response_factory(result = None, error = None , message = None):
+    d = {}
+    d['result'] = {'cluster': [],
+                    'cluster_length': 0,
+                    'simulacion': {}}
+    d['error'] = error
+    d['message'] = message
+    return d
 
 @app.route('/')
 def im_alive():
@@ -42,7 +47,25 @@ def im_alive():
 
 @app.route('/eesSim', methods= ['GET', 'POST'])
 def ees_sim_v1():
-    return jsonify(json_response)
+    out = response_factory()
+    # if not request.is_json():
+    #     out['error'] = 'Error'
+    #     out['message'] = 'POST should contain JSON. Set mimetype to \'Application/json\''
+
+    try:
+        body_info = request.get_json(force=True)
+    except ValueError:
+        out['error'] = 'Error'
+        out['message'] = 'Error parsing JSON input'
+
+    if 'cluster' in body_info.keys():
+        out['result']['cluster'] = body_info['cluster']
+        out['result']['cluster_length'] = len(body_info['cluster'])
+
+    if 'simulacion' in body_info.keys(): 
+        out['simulacion'] = {}   
+
+    return jsonify(out)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,7 +3,7 @@ MAINTAINER Juan F Paulini "jpaulini@gmail.com"
 RUN apt-get -yqq update ;
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 
 ENV PATH /opt/conda/bin:$PATH
-ENV APP_NAME cv_app
+ENV APP_NAME app
 ENV APP_HOME /opt/${APP_NAME}
 ENV ENVIRONMENT dev
 ENV FLASK_APP ${APP_HOME}/app.py 
@@ -22,7 +22,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.4-Linux-x86_
     echo "conda activate base" >> ~/.bashrc
 
 RUN mkdir ${APP_HOME}
-ADD cv_app ${APP_HOME}
+ADD app ${APP_HOME}
 WORKDIR ${APP_HOME}
 ADD requirements.txt ${APP_HOME}
 RUN pip install -r requirements.txt

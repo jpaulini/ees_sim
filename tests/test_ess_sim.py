@@ -6,12 +6,12 @@ import unittest
 
 # sys.path.append("../app")
 # from app import ees_sim_v1
-
 # class TestFunction(unittest.TestCase):
 #     """Test for ees_sim_v1 request"""
 #     def test_ees_sim_v1(self):
 #         out = ees_sim_v1()
 #         self.assertEqual(out, '{ "message": "I\'m alive in eesSim!"}')
+
 class TestEesSim(unittest.TestCase):
     def setUp(self):
         self.data = {
@@ -34,24 +34,24 @@ class TestEesSim(unittest.TestCase):
     def test_json_contains_cluster(self):
         r = requests.post('http://127.0.0.1:5000/eesSim', data = self.json_data)
         json_out = r.json()
-        self.assertNotEqual(json_out['result']['cluster'], None)
+        self.assertTrue('results' in json_out.keys() )
 
     def test_json_contains_cluster_length(self):
         r = requests.post('http://127.0.0.1:5000/eesSim', data = self.json_data)
         json_out = r.json()
-        cluster = json_out['result']['cluster']
-        self.assertEqual(json_out['result']['cluster_length'], len(cluster))
+        cluster = json_out['results']['cluster']
+        self.assertEqual(json_out['results']['cluster_length'], len(cluster))
 
     def test_json_contains_simulacion(self):
         r = requests.post('http://127.0.0.1:5000/eesSim', data = self.json_data)
         json_out = r.json()
-        self.assertNotEqual(json_out['result']['simulacion'], None)
+        self.assertNotEqual(json_out['results']['simulacion'], None)
     
     def test_empty_request(self):
         r = requests.post('http://127.0.0.1:5000/eesSim', data = json.dumps({}))
         print(r.text)
         json_out = r.json()
-        self.assertEqual(json_out['result']['simulacion'], {})
+        self.assertEqual(json_out['results']['simulacion'], {})
 
 if __name__ == '__main__':
     unittest.main()

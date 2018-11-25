@@ -34,7 +34,7 @@ mock_content = {'cluster': [{'id': "DW1001",
                 }
 def response_factory(result = None, error = None , message = None):
     d = {}
-    d['result'] = {'cluster': [],
+    d['results'] = {'cluster': [],
                     'cluster_length': 0,
                     'simulacion': {}}
     d['error'] = error
@@ -47,6 +47,9 @@ def im_alive():
 
 @app.route('/eesSim', methods= ['GET', 'POST'])
 def ees_sim_v1():
+    lat = None
+    long = None
+
     out = response_factory()
     # if not request.is_json():
     #     out['error'] = 'Error'
@@ -59,11 +62,21 @@ def ees_sim_v1():
         out['message'] = 'Error parsing JSON input'
 
     if 'cluster' in body_info.keys():
-        out['result']['cluster'] = body_info['cluster']
-        out['result']['cluster_length'] = len(body_info['cluster'])
+        cluster_list = []
+        for es in body_info['cluster']:
+            cluster_list.append({'id': es})
+        out['results']['cluster'] = cluster_list
+        out['results']['cluster_length'] = len(cluster_list)
 
-    if 'simulacion' in body_info.keys(): 
-        out['simulacion'] = {}   
+    if 'simulacion' in body_info.keys():
+        if 'lat' in body_info['simulacion']:
+            lat = body_info['simulacion']['lat']
+        if 'long' in body_info['simulacion']:
+            long = body_info['simulacion']['long']
+        if lat is None or long is None:
+            out['results']['simulacion'] = {}
+            out['error'] = 'MissingLatLong'
+            out['message'] = 'Especificar latitud y longitud en simulacion como \'lat\' y \'long\''
 
     return jsonify(out)
 
